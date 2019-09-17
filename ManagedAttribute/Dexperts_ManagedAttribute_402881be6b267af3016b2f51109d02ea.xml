@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE ManagedAttribute PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<ManagedAttribute attribute="Role" hash="6a06444abcefc01aa74346938ae9e53534002bec" requestable="true" type="Entitlement" value="Developer">
+  <ApplicationRef>
+    <Reference class="sailpoint.object.Application" name="JDBC Global Provisioning"/>
+  </ApplicationRef>
+</ManagedAttribute>

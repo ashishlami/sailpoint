@@ -1,0 +1,204 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Workflow PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Workflow explicitTransitions="true" name="JDBC_Provisioning">
+  <Variable input="true" name="project" output="true"/>
+  <Variable input="true" name="plan" output="true"/>
+  <Variable initializer="ref:gender" name="gender"/>
+  <Variable initializer="ref:PositionCode" name="PositionCode"/>
+  <Variable initializer="ref:managerId" name="managerId"/>
+  <Variable initializer="ref:email" name="email"/>
+  <Variable name="JobCode"/>
+  <Variable initializer="ref:Status" name="Status"/>
+  <Variable initializer="ref:Country" name="Country"/>
+  <Step icon="Default" name="form" posX="127" posY="40">
+    <Approval name="JDBC Provisioning" owner="spadmin" return="IdentityName,ApplicationName,AdOperation,EntitleMent" send="IdentityName,ApplicationName,AdOperation,EntitleMent">
+      <Form name="JDBC Provisioning">
+        <Attributes>
+          <Map>
+            <entry key="pageTitle" value="JDBC Provisioning"/>
+            <entry key="title" value="Provisioning"/>
+          </Map>
+        </Attributes>
+        <Description>Provisioning in JDBC.</Description>
+        <Section name="Identity">
+          <Field displayName="Identity" helpKey="Please select identity." name="IdentityName" postBack="true" required="true" type="sailpoint.object.Identity"/>
+        </Section>
+        <Section name="Application">
+          <Field displayName="Application" filterString="name.startsWith(&quot;JDBC Global Provisioning&quot;)" helpKey="Please select application." name="ApplicationName" postBack="true" required="true" type="Application">
+            <Attributes>
+              <Map>
+                <entry key="hidden">
+                  <value>
+                    <Script>
+                      <Source><![CDATA[if (IdentityName==null) {
+return true;
+} else {
+return false;
+}]]></Source>
+                    </Script>
+                  </value>
+                </entry>
+              </Map>
+            </Attributes>
+          </Field>
+        </Section>
+        <Section name="Entitlement">
+          <Field displayName="Entitlement" name="EntitleMent" postBack="true" required="true" type="string">
+            <AllowedValuesDefinition>
+              <Script>
+                <Source><![CDATA[import sailpoint.object.*;
+ 	import org.apache.log4j.Logger;
+  import sailpoint.object.ManagedAttribute;
+	
+  Logger custLog = Logger.getLogger("customLogger.logfromruleName");
+	
+ Filter f1 = Filter.eq("application.name", "JDBC Global Provisioning");
+ 	QueryOptions qo = new QueryOptions();
+ 	qo.addFilter(f1);
+  
+  List manageAttribute = context.getObjects(ManagedAttribute.class, qo);
+  List list1 = new ArrayList();
+  for ( ManagedAttribute manage : manageAttribute) {
+    
+    //manage.addDescription("Description", "This is requestable entitlement");
+   String manage1 =	manage.getValue();
+    list1.add(manage1);
+    }
+    
+   return list1;]]></Source>
+              </Script>
+            </AllowedValuesDefinition>
+            <Attributes>
+              <Map>
+                <entry key="hidden">
+                  <value>
+                    <Script>
+                      <Source><![CDATA[if (ApplicationName==null) {
+return true;
+} else {
+return false;
+}]]></Source>
+                    </Script>
+                  </value>
+                </entry>
+              </Map>
+            </Attributes>
+          </Field>
+        </Section>
+        <Section name="Operation">
+          <Field displayName="Operation" helpKey="Please select operation." name="AdOperation" postBack="true" type="string">
+            <AllowedValuesDefinition>
+              <Script>
+                <Source><![CDATA[import sailpoint.object.Identity;
+  import sailpoint.api.SailpointContext;
+  import java.util.List;
+  import java.util.ArrayList;
+  import java.util.Map;
+  import java.util.HashMap;
+  import java.util.*;
+  import java.util.object.*;
+  import java.lang.object;
+  import org.apache.log4j.Logger; 
+	import sailpoint.object.Link;  
+	import sailpoint.object.Application;  
+
+Identity identity = context.getObjectByName(Identity.class,"george.bush");
+List links = identity.getLinks();  
+List list1 = new ArrayList();
+List list2 = new ArrayList();
+ List list3 = new ArrayList();
+for (Link link: links) {  
+  Application application = link.getApplication();  
+  String app = application.getName();
+  list1.add(app);
+}
+  boolean isJDBC=false;
+  for(String lt:list1) {
+  
+    if(lt.equals("JDBC Global Provisioning")){
+     
+     isJDBC=true;
+      break;
+    }
+    else {
+      
+   	isJDBC=false;
+      
+   }
+  }
+    if(isJDBC){
+    
+     list2.add("Enable");
+  	  list2.add("Disable");
+  	  list2.add("Modify");
+  	  list2.add("Delete");
+    
+    }else{
+    
+    list2.add("Create");
+    }
+    
+  
+  
+ 
+return list2;
+ ]]></Source>
+              </Script>
+            </AllowedValuesDefinition>
+            <Attributes>
+              <Map>
+                <entry key="hidden">
+                  <value>
+                    <Script>
+                      <Source><![CDATA[if(EntitleMent==null) {
+return true;
+} else {
+return false;
+}]]></Source>
+                    </Script>
+                  </value>
+                </entry>
+              </Map>
+            </Attributes>
+          </Field>
+        </Section>
+        <Button action="next" label="Next"/>
+        <Button action="back" label="Back"/>
+      </Form>
+    </Approval>
+    <Transition to="ProvisionPlan"/>
+  </Step>
+  <Step icon="Start" name="Start" posX="24" posY="30">
+    <Transition to="form"/>
+  </Step>
+  <Step icon="Stop" name="Stop" posX="829" posY="50"/>
+  <Step action="rule:ProvisionPlan_JDBC" icon="Default" name="ProvisionPlan" posX="226" posY="88" resultVariable="plan">
+    <Arg name="plan" value="ref:plan"/>
+    <Arg name="IdentityName" value="ref:IdentityName"/>
+    <Transition to="Build Approval Set"/>
+  </Step>
+  <Step action="compileProvisioningProject" icon="Default" name="CompileProvisionPlan" posX="488" posY="198" resultVariable="project">
+    <Arg name="project" value="ref:project"/>
+    <Arg name="plan" value="ref:plan"/>
+    <Arg name="IdentityName" value="ref:IdentityName"/>
+    <Transition to="provisionProject"/>
+  </Step>
+  <Step action="provisionProject" icon="Default" name="provisionProject" posX="590" posY="107">
+    <Arg name="project" value="ref:project"/>
+    <Arg name="plan" value="ref:plan"/>
+    <Arg name="IdentityName" value="ref:IdentityName"/>
+    <Transition to="Email Send"/>
+  </Step>
+  <Step action="sendEmail" icon="Default" name="Email Send" posX="698" posY="138">
+    <Arg name="template" value="LCM User Notification"/>
+    <Arg name="cc" value="ref:cc"/>
+    <Arg name="From" value="ref:From"/>
+    <Arg name="To" value="ref:To"/>
+    <Arg name="Body" value="ref:Body"/>
+    <Transition to="Stop"/>
+  </Step>
+  <Step action="buildApprovalSet" icon="Default" name="Build Approval Set" posX="309" posY="131" resultVariable="approvalSet">
+    <Arg name="plan" value="ref:plan"/>
+    <Transition to="CompileProvisionPlan"/>
+  </Step>
+</Workflow>

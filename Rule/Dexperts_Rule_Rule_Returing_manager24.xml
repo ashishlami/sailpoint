@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule language="beanshell" name="Rule_Returing_manager24">
+  <Source><![CDATA[
+
+import sailpoint.object.*;
+import sailpoint.tools.*;
+import org.apache.log4j.Logger;
+import java.util.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import org.apache.log4j.Logger;
+
+Logger custLog = Logger.getLogger("customLogger.myRule");
+custLog.info("Logger Working");
+
+QueryOptions qo = new QueryOptions();
+
+
+Iterator it = context.search(Identity.class, qo);
+
+while( (null != it) && (it.hasNext()) ) {
+
+  try {
+
+Identity user = (Identity) it.next();
+//String username = user.getName();
+//String username_email = user.getEmail();
+Identity manager = user.getManager();
+
+//custLog.info(manager);
+custLog.info(manager.getName());
+  }
+  catch (NullPointerException npe) {
+
+  }
+}
+  
+return;
+
+
+ 	]]></Source>
+</Rule>

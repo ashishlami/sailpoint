@@ -1,0 +1,240 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule language="beanshell" name="JDBC_Global_Provisioning" type="JDBCProvision">
+  <Description>This rule is used by the JDBC connector to do provisioning of the data .</Description>
+  <Signature returnType="ProvisioningResult">
+    <Inputs>
+      <Argument name="log">
+        <Description>
+          The log object associated with the SailPointContext.
+        </Description>
+      </Argument>
+      <Argument name="context">
+        <Description>
+          A sailpoint.api.SailPointContext object that can be used to query the database if necessary.
+        </Description>
+      </Argument>
+      <Argument name="application">
+        <Description>
+                The application whose data file is being processed.
+                </Description>
+      </Argument>
+      <Argument name="schema">
+        <Description>
+                The Schema currently in use.
+                </Description>
+      </Argument>
+      <Argument name="connection">
+        <Description>
+                A connection object to connect to database.
+                </Description>
+      </Argument>
+      <Argument name="plan">
+        <Description>
+                The ProvisioningPlan created against the JDBC application.
+                </Description>
+      </Argument>
+    </Inputs>
+    <Returns>
+      <Argument name="result">
+        <Description>
+                A Provisioning Result object is desirable to return the status.IT can be a new object or part of  Provisioning Plan
+                </Description>
+      </Argument>
+    </Returns>
+  </Signature>
+  <Source><![CDATA[import java.sql.Connection;
+  import java.sql.DriverManager;
+  import java.sql.PreparedStatement;
+  import java.sql.SQLException;
+  import java.sql.Types;
+  import java.util.List;
+  import sailpoint.api.SailPointContext;
+  import sailpoint.connector.JDBCConnector;
+  import sailpoint.object.Application;
+  import sailpoint.object.ProvisioningPlan;
+  import sailpoint.object.ProvisioningPlan.AccountRequest;
+  import sailpoint.object.ProvisioningPlan.AttributeRequest;
+  import sailpoint.object.ProvisioningPlan.PermissionRequest;
+  import sailpoint.object.ProvisioningResult;
+  import sailpoint.object.Schema;
+  import sailpoint.tools.xml.XMLObjectFactory;
+  import org.apache.commons.logging.LogFactory;
+  import org.apache.log4j.Logger;
+  
+	
+  Logger custLog = Logger.getLogger("customLogger.myRule");
+  System.out.println("Its coming over here");
+  public String getAttributeRequestValue(AccountRequest acctReq, String attribute) {
+    if ( acctReq != null ) {
+      AttributeRequest attrReq = acctReq.getAttributeRequest(attribute);
+      if ( attrReq != null ) {
+        return attrReq.getValue();
+      }
+    }
+    return null;
+  }
+  ProvisioningResult result = new ProvisioningResult();
+
+  if ( plan != null ) {
+
+    System.out.println( "plan [" + plan.toXml() + "]" );
+    List accounts = plan.getAccountRequests();
+
+    if ( ( accounts != null ) && ( accounts.size() > 0 ) ) {
+      for ( AccountRequest account : accounts ) {
+        try {
+          if ( AccountRequest.Operation.Create.equals( account.getOperation() ) ) {
+
+            //Ideally we should first check to see if the account already exists.
+            //As written, this just assumes it does not.
+
+           custLog.info( "Operation [" + account.getOperation() + "] detected." );
+
+          PreparedStatement statement = connection.prepareStatement( "insert into prov191(UserName,FirstName,LastName,Email,managerId,PositionCode,jobCode,Country,gender,Status,Role) values (?,?,?,?,?,?,?,?,?,?,?)" );
+         	 statement.setString ( 1, (String) account.getNativeIdentity() );
+         	 statement.setString ( 2, getAttributeRequestValue(account,"Firstname") );
+           statement.setString ( 3, getAttributeRequestValue(account,"Lastname") );
+           statement.setString ( 4, getAttributeRequestValue(account,"Email") );
+          statement.setString ( 5, getAttributeRequestValue(account,"Manager") );
+          statement.setString ( 6, getAttributeRequestValue(account,"PositionCode") );
+           statement.setString ( 7, getAttributeRequestValue(account,"JobCode") );
+           statement.setString ( 8, getAttributeRequestValue(account,"Country") );
+           statement.setString ( 9, getAttributeRequestValue(account,"gender") );
+           statement.setString ( 10, getAttributeRequestValue(account,"Status") );
+           statement.setString ( 11, getAttributeRequestValue(account,"Role") );
+           statement.executeUpdate();
+
+            result.setStatus( ProvisioningResult.STATUS_COMMITTED );
+            custLog.info("it is coming create");
+
+          } else if ( AccountRequest.Operation.Modify.equals( account.getOperation() ) )
+
+          {
+
+            // Modify account request -- change role
+
+            custLog.info( "Operation [" + account.getOperation() + "] detected." );
+
+            PreparedStatement statement = connection.prepareStatement( "update prov191 set Role = ? where UserName = ?;" );
+
+            statement.setString ( 2, (String) account.getNativeIdentity() );
+
+            if ( account != null ) {
+
+              AttributeRequest attrReq = account.getAttributeRequest("Role");
+
+              if ( attrReq != null && ProvisioningPlan.Operation.Remove.equals(attrReq.getOperation()) ) {
+
+                statement.setNull ( 1, Types.NULL );
+
+                custLog.info( "Preparing to execute:"+statement.toString() );
+
+                statement.executeUpdate();
+
+              } else {
+
+                statement.setString(1,attrReq.getValue());
+
+                custLog.info( "Preparing to execute:"+statement.toString() );
+
+                statement.executeUpdate();
+
+              }
+
+            }
+
+            result.setStatus( ProvisioningResult.STATUS_COMMITTED );
+
+          } else if ( AccountRequest.Operation.Delete.equals( account.getOperation() ) )
+
+          {
+
+            custLog.info( "Operation [" + account.getOperation() + "] detected." );
+
+            PreparedStatement statement = connection.prepareStatement( "DELETE FROM prov191 WHERE UserName=?;");
+
+           // application.getAttributeValue( "account.deleteSQL" ) );
+
+            statement.setString ( 1, (String) account.getNativeIdentity() );
+
+            statement.executeUpdate();
+
+            result.setStatus( ProvisioningResult.STATUS_COMMITTED );
+
+          } else if ( AccountRequest.Operation.Disable.equals( account.getOperation() ) )
+
+          {
+            
+						String idn=(String) account.getNativeIdentity();
+            PreparedStatement statement=connection.prepareStatement("update prov191 set Status= ? where UserName=?;");  
+            statement.setString(1,"inactive");
+  					statement.setString(2,idn);
+           
+           // custLog.info("getting statement"+statement);
+						custLog.info("getting operation");
+            custLog.info( "Operation [" + account.getOperation() + "] is not supported!");
+            statement.executeUpdate();
+             result.setStatus( ProvisioningResult.STATUS_COMMITTED );
+
+          } else if ( AccountRequest.Operation.Enable.equals( account.getOperation() ) )
+
+          {
+
+            String idn=(String) account.getNativeIdentity();
+            PreparedStatement statement=connection.prepareStatement("update prov191 set Status= ? where UserName=?;");  
+            statement.setString(1,"active");
+  					statement.setString(2,idn);
+           
+           // custLog.info("getting statement"+statement);
+						custLog.info("getting operation");
+            custLog.info( "Operation [" + account.getOperation() + "] is not supported!");
+            statement.executeUpdate();
+             result.setStatus( ProvisioningResult.STATUS_COMMITTED );
+            
+            
+
+          } else if ( AccountRequest.Operation.Lock.equals( account.getOperation() ) ) {
+
+            // Not supported.
+
+            custLog.info( "Operation [" + account.getOperation() + "] is not supported!");
+
+          } else if ( AccountRequest.Operation.Unlock.equals( account.getOperation() ) )
+
+          {
+
+            // Not supported.
+
+            custLog.info( "Operation [" + account.getOperation() + "] is not supported!");
+
+          } else {
+
+            // Unknown operation!
+
+            custLog.info( "Unknown operation [" + account.getOperation() + "]!" );
+
+          }
+
+        }
+
+        catch( SQLException e ) {
+
+       //   custLog.error( e );
+
+          result.setStatus( ProvisioningResult.STATUS_FAILED );
+
+          result.addError( e );
+
+        }
+
+      }
+
+    }
+
+  }
+
+ // custLog.debug( "result [" + result.toXml(false)+ "]");
+
+  return result;]]></Source>
+</Rule>

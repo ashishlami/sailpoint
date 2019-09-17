@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE ManagedAttribute PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<ManagedAttribute aggregated="true" displayName="DEXPERTRAIN\Engineer" hash="8d101a720ddab440070c9cbf2d3b1678c76ba873" lastRefresh="1559859124285" type="group" uuid="{241220e1-3ee8-4253-a233-e7f821d505c0}" value="CN=Engineer,OU=Indeed,OU=JobHunt,DC=dexpertrain,DC=com">
+  <ApplicationRef>
+    <Reference class="sailpoint.object.Application" name="Active Directory Application"/>
+  </ApplicationRef>
+  <Attributes>
+    <Map>
+      <entry key="GroupScope" value="Global"/>
+      <entry key="GroupType" value="Security"/>
+      <entry key="cn" value="Engineer"/>
+      <entry key="msDS-PrincipalName" value="DEXPERTRAIN\Engineer"/>
+      <entry key="objectSid" value="S-1-5-21-3524962787-4087557611-1025314962-1119"/>
+      <entry key="objectguid" value="{241220e1-3ee8-4253-a233-e7f821d505c0}"/>
+      <entry key="sAMAccountName" value="Engineer"/>
+      <entry key="sysDescriptions">
+        <value>
+          <Map>
+            <entry key="en_US"/>
+          </Map>
+        </value>
+      </entry>
+    </Map>
+  </Attributes>
+  <Owner>
+    <Reference class="sailpoint.object.Identity" name="spadmin"/>
+  </Owner>
+</ManagedAttribute>

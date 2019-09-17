@@ -1,0 +1,58 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule language="beanshell" name="custom_rule_extentedattribute12">
+  <Description>Test rule to get all entitlements from one application </Description>
+  <Source><![CDATA[
+  import sailpoint.object.*;
+ 	import org.apache.log4j.Logger;
+	
+  Logger custLog = Logger.getLogger("customLogger.myRule");
+  List appList = context.getObjects(Application.class);
+  
+  String appName = "";
+  for (Application app:appList){
+   	appName=app.getName();
+  	custLog.info(appName);
+  
+  
+ if(appName.equals("Active Directory Application")) {
+  
+  //QueryOptions qo = new QueryOptions();
+ 	//qo.add(Filter.eq("Application.name", appName));
+  //custLog.info("this is the app1"+appName);
+  
+  	app.setAttribute("SOXCompliance", "False");   
+    
+    context.saveObject(app);
+    context.commitTransaction();   
+    
+  }
+  else if (appName.equals("Deliminiator Application Onboarding")) {
+  
+  
+  	app.setAttribute("SOXCompliance", "True");   
+    
+    context.saveObject(app);
+    context.commitTransaction();    
+  
+  }
+   
+  else if (appName.equals("JDBC Application Onboarding")) {
+ 
+ 
+  	app.setAttribute("SOXCompliance", "True");   
+    
+    context.saveObject(app);
+    context.commitTransaction();   
+  
+  }
+ 
+ 	else {
+ 
+   custLog.info("This is not running");
+ 
+ }
+  }
+             
+  ]]></Source>
+</Rule>

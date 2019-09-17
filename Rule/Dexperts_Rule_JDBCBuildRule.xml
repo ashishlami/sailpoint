@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule language="beanshell" name="JDBCBuildRule" type="JDBCBuildMap">
+  <Description>This rule is used by the JDBC connector to build a map representation of the Resultset.</Description>
+  <Signature returnType="Map"/>
+  <Source><![CDATA[import sailpoint.connector.*;
+import java.util.*;
+import org.apache.log4j.Logger;
+
+  Logger custLog = Logger.getLogger("customLogger.logfromruleName");
+	custLog.info("This is an info message.");
+
+    
+    
+     Map map = JDBCConnector.defaultBuildMap(cols, record);
+
+     custLog.info(map);
+
+
+     String strApp = (String) map.getStringAttribute("firstname");
+
+     String strRights = (String) map.getStringAttribute("address");
+
+    //Manipulate Target and Rights into Permissions
+custLog.info(strApp);
+custLog.info(strRights);
+
+
+     if ( strApp != null && strRights != null ) {
+
+          map.remove("firstname");
+
+          map.remove("address");
+          String access = (strApp + " - " + strRights);
+          custLog.info(access);
+          map.put("access", strApp + " - " + strRights);
+
+     }
+
+     return map;]]></Source>
+</Rule>

@@ -1,0 +1,76 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule language="beanshell" name="Rule_Returing_authorariveSourceUser">
+  <Source><![CDATA[
+
+import sailpoint.object.*;
+import sailpoint.tools.*;
+import org.apache.log4j.Logger;
+import java.util.*;
+import sailpoint.object.Application;
+import sailpoint.object.Link;
+  
+Logger custLog = Logger.getLogger("customLogger.myRule");
+custLog.info("Logger Working");
+  
+ 
+ 	Filter f1 = Filter.eq("Application.authoritative", true);
+ 	QueryOptions qo = new QueryOptions();
+ 	qo.addFilter(f1);
+  
+  custLog.info("first things"+qo);
+ String appName="";
+  //custLog.info("I am fire"+qo);
+  //String appNam = "JDBC Application Onboarding";
+  List appList =context.getObjects(Application.class,qo);
+  custLog.info("first things to do "+appList);
+  for (Application app:appList){
+  appName=app.getName();
+    
+   custLog.info("first things to do "+appName);
+  }
+  System.out.println("Application name is "+appName);
+  
+  Filter f2 = Filter.eq("links.application.name", appName);
+ 	QueryOptions q1 = new QueryOptions();
+ 	q1.addFilter(f2);
+   custLog.info("first things to do in life "+q1);
+  List identityList =context.getObjects(Identity.class,q1);
+  List identityNameList=new ArrayList();
+  for  (Identity identity: identityList){
+  identityNameList.add(identity.getName());
+  
+  }
+ //	List list1 = new ArrayList();
+ // List idLinks = newIdentity.getLinks();
+  		
+ 	//for(Identity link : idLinks){
+
+		//if(application.isAuthoritative()) {
+
+//custLog.info("this is authorative");
+
+//    } else {
+      
+  //    custLog.info("this is not authoritave");
+  
+ // }
+  
+//custLog.info("I am doing alright");
+  
+//}
+  
+//custLog.info("I am doing bad");
+  
+  
+ // }
+//
+
+  
+ //return list1; 
+  
+  
+  return identityNameList;
+  //return appName;
+ 	]]></Source>
+</Rule>

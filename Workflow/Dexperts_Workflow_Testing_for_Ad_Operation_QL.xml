@@ -1,0 +1,98 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Workflow PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Workflow explicitTransitions="true" name="Testing_for_Ad_Operation_QL" type="">
+  <Variable initializer="ref:plan" name="plan"/>
+  <Variable initializer="ref:project" name="project"/>
+  <Step icon="Default" name="form" posX="207" posY="136">
+    <Approval name="Ad Provision Operation" owner="spadmin" return="IdentityName,ManageAttribute,AdOperation" send="IdentityName,ManageAttribute,AdOperation">
+      <Form name="Ad Provision Operation">
+        <Attributes>
+          <Map>
+            <entry key="pageTitle" value="Ad Provision Operation"/>
+            <entry key="title" value="Ad Provision Operation"/>
+          </Map>
+        </Attributes>
+        <Section name="Identity Name">
+          <Field displayName="Identity Name" filterString="links.application.name==&quot;Active Directory Application&quot; || links.application.name==&quot;Deliminiator Application Onboarding&quot;" helpKey="Choose the Identity" name="IdentityName" postBack="true" type="sailpoint.object.Identity"/>
+        </Section>
+        <Section name="Entitlement">
+          <Field displayName="Entitlement" helpKey="Choose the entitlement " name="ManageAttribute" postBack="true" type="ManagedAttribute"/>
+        </Section>
+        <Section name="Operation">
+          <Field displayName="Operation" name="AdOperation" postBack="true" type="string">
+            <AllowedValuesDefinition>
+              <Script>
+                <Source><![CDATA[import sailpoint.api.SailpointContext;
+   import java.util.List;
+   import java.util.ArrayList;
+   import java.util.Map;
+   import java.util.HashMap;
+   import java.util.*;
+   import java.util.object.*;
+   import sailpoint.object.Link;
+   import java.lang.object;
+  import sailpoint.object.Identity;
+   import org.apache.log4j.Logger;
+	
+  Logger custLog = Logger.getLogger("customLogger.myRule");
+  
+  if(IdentityName!=null){
+  
+  Identity ide = context.getObjectById(Identity.class,IdentityName);  
+ 	//String identName = ide.getName();
+ 
+  List links = ide.getLinks();  
+ 	List list1 = new ArrayList(); 
+  List list2 = new ArrayList();	
+
+  
+  String appName = "";
+  
+    for(Link ln:links){
+   appName = ln.getApplicationName();
+  	
+    if(appName.equals("Active Directory Application")){   
+    list1.add("Enable");
+    list1.add("Disable");
+    
+    return list1;
+    
+  } else {
+  		
+    //list2.add("Enable"); 
+    //list2.add("Disable");
+    list2.add("Create");
+      
+    return list2;
+      
+    } 
+  
+  }
+  }
+]]></Source>
+              </Script>
+            </AllowedValuesDefinition>
+          </Field>
+        </Section>
+        <Button action="next" label="Next"/>
+        <Button action="cancel" label="Cancel"/>
+      </Form>
+    </Approval>
+    <Transition to="ProvisioningPlan"/>
+  </Step>
+  <Step icon="Start" name="Start" posX="116" posY="21">
+    <Transition to="form"/>
+  </Step>
+  <Step icon="Stop" name="Stop" posX="846" posY="91"/>
+  <Step action="rule:Provisioning_AD_Workflow_Operation_setup" icon="Default" name="ProvisioningPlan" posX="356" posY="200" resultVariable="plan">
+    <Arg name="project" value="ref:project"/>
+    <Arg name="plan" value="ref:plan"/>
+    <Transition to="compileProvisioningProject"/>
+  </Step>
+  <Step action="compileProvisioningProject" icon="Default" name="compileProvisioningProject" posX="523" posY="239" resultVariable="project">
+    <Transition to="provisionProject"/>
+  </Step>
+  <Step action="provisionProject" icon="Default" name="provisionProject" posX="674" posY="243">
+    <Transition to="Stop"/>
+  </Step>
+</Workflow>

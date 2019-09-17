@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule language="beanshell" name="returing_entitlementofJDBC">
+  <Description>Test rule to get all entitlements from one application </Description>
+  <Source><![CDATA[
+  import sailpoint.object.*;
+ 	import org.apache.log4j.Logger;
+  import sailpoint.object.ManagedAttribute;
+	
+  Logger custLog = Logger.getLogger("customLogger.logfromruleName");
+	
+ Filter f1 = Filter.eq("application.name", "JDBC Global Provisioning");
+ 	QueryOptions qo = new QueryOptions();
+ 	qo.addFilter(f1);
+  
+  List manageAttribute = context.getObjects(ManagedAttribute.class, qo);
+  List list1 = new ArrayList();
+  for ( ManagedAttribute manage : manageAttribute) {
+    
+    //manage.addDescription("Description", "This is requestable entitlement");
+   String manage1 =	manage.getValue();
+    //list1.add(manage1);
+    }
+    
+   return manage1;
+ 
+  ]]></Source>
+</Rule>

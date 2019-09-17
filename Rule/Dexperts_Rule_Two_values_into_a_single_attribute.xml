@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule language="beanshell" name="Two values into a single attribute" type="BuildMap">
+  <Description>This rule is used by the delimited file connector to build a map representation of the delimited data.</Description>
+  <Signature returnType="Map"/>
+  <Source><![CDATA[<?xml version='1.0' encoding='UTF-8'?>
+
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+
+<Rule name="Example Rule" type="BuildMap">
+
+  <Description>
+
+This basic rule performs the combines 2 values into a single attribute.
+
+</Description>
+
+  <Source>
+
+     import sailpoint.connector.DelimitedFileConnector;
+
+ 
+
+     // Execute default build map logic
+
+     Map map = DelimitedFileConnector.defaultBuildMap(cols, record);
+
+     String strApp = (String) map.get("application");
+
+     String strRights = (String) map.get("rights");
+
+     //Manipulate Target and Rights into Permissions
+
+     if ( strApp != null && strRights != null ) {
+
+          map.remove("application");
+
+          map.remove("rights");
+
+          map.put("access", strApp + " - " + strRights);
+
+     }
+
+     return map;
+
+
+ </Source>
+
+</Rule>]]></Source>
+</Rule>

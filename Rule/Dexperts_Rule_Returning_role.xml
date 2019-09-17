@@ -1,0 +1,83 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule language="beanshell" name="Returning_role">
+  <Description>Test rule to get all role from one application </Description>
+  <Source><![CDATA[
+   import sailpoint.object.Filter;
+   import sailpoint.object.QueryOptions;
+   import sailpoint.object.Profile;
+   import sailpoint.object.Bundle;
+   import org.apache.log4j.Logger; 
+
+ 
+
+    String appName = "Active Directory Application";
+    List entlList = new ArrayList();
+    List roles = new ArrayList();
+
+ 
+
+//filter the entitlement attribute with the value not the display name.
+
+    Filter filter = Filter.eq("department_id", "5");
+
+    entlList.add(filter);
+
+ 
+
+    QueryOptions queryOptions = new QueryOptions();
+
+       queryOptions.addFilter(Filter.eq("application.name", appName));
+
+    queryOptions.addFilter(Filter.containsAll("constraints", entlList));
+
+ 
+
+    Iterator profileIterator = context.search(Profile.class, queryOptions);
+
+   
+
+    while(null != profileIterator && profileIterator.hasNext()) {
+
+ 
+
+        Profile profile = profileIterator.next();
+
+          log.debug("The profile is: "+profile);
+
+ 
+
+        if(null != profile) {
+
+ 
+
+            log.debug("ProfileId: " + profile.getId());
+
+ 
+
+            Bundle bundle = profile.getBundle();
+
+ 
+
+            if(null != Bundle) {
+
+ 
+
+                  roles.add(bundle.getName());
+
+ 
+
+            }
+
+ 
+
+        }
+
+ 
+
+    }
+
+  return roles;
+    
+  ]]></Source>
+</Rule>

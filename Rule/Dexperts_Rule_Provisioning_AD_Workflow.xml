@@ -1,0 +1,73 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule language="beanshell" name="Provisioning_AD_Workflow" type="Workflow">
+  <Description>A rule used by a Workflow to determine a step action or variable value.
+
+Note that an Attributes map of all variables from the current WorkflowContext, merged with the arguments from the Step, is also passed into the workflow rule.</Description>
+  <Signature returnType="Object"/>
+  <Source><![CDATA[import sailpoint.api.*;  
+import sailpoint.object.*;  
+import sailpoint.api.SailPointContext;  
+import sailpoint.object.Attributes;  
+import sailpoint.object.ProvisioningPlan.AccountRequest;  
+import sailpoint.object.ProvisioningPlan.AttributeRequest;  
+//import sailpoint.object.ProvisioningPlan.Operation;  
+import sailpoint.api.Provisioner;
+import java.util.List;
+import java.util.ArrayList;  
+import sailpoint.object.ProvisioningPlan;
+import org.apache.log4j.Logger;
+
+  Logger custLog = Logger.getLogger("customLogger.myRule");
+  
+  ProvisioningPlan plan = new ProvisioningPlan(); 
+	 
+
+  Identity ident = context.getObjectById(Identity.class,IdentityName);
+  String identname = ident.getName();
+	custLog.info("Username"+identname);
+  custLog.info("Operation is coming"+AdOperation);
+
+  String toProvAppName= "Active Directory Application";  
+  custLog.info("This is entitlement"+ManageAttribute);
+  
+  
+	int fidxofcomma=ManageAttribute.indexOf(",");  
+  int lidx=ManageAttribute.length();
+	String entit = ManageAttribute.substring(fidxofcomma,lidx);
+  custLog.info(entit);
+ 
+  
+  String dn="cn="+identname+entit;
+  custLog.info("distingushname"+dn);
+  
+  // Create AD Account   
+  AccountRequest accReq = new AccountRequest();  
+  accReq.setApplication(toProvAppName);  
+	accReq.setNativeIdentity(dn);
+  
+  custLog.info("Works till here ");
+  accReq.setOperation(ProvisioningPlan.AccountRequest.Operation.Create); 
+  custLog.info("Create is working too");
+  
+  accReq.add(new AttributeRequest("sAMAccountName",Operation.Set, identname));  
+ 	accReq.add(new AttributeRequest("distinguishedName",Operation.Set,dn));  
+ 	accReq.add(new AttributeRequest("password",Operation.Add,"newPa$$word"));  
+  accReq.add(new AttributeRequest("IIQDisabled",Operation.Set,"false"));  
+ 	accReq.add(new AttributeRequest("memberOf",Operation.Add, ManageAttribute));
+  
+  custLog.info("All attribute request is also working");
+  
+  List accReqList = new ArrayList();  
+  accReqList.add(accReq);  
+
+  
+  plan.setAccountRequests(accReqList);
+  plan.setIdentity(ident);  
+ 	custLog.info(plan.toXml());
+ 
+  //Provisioner provisioner = new Provisioner(context);
+  //provisioner.execute(plan);
+  
+  return plan;]]></Source>
+</Rule>

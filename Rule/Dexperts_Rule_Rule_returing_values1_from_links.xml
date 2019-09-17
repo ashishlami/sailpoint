@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule language="beanshell" name="Rule_returing_values1_from_links">
+  <Source><![CDATA[
+  
+    import sailpoint.object.Identity;
+   import sailpoint.api.SailpointContext;
+   import java.util.List;
+   import java.util.ArrayList;
+   import java.util.*;
+   import java.util.object.*;
+  import sailpoint.object.Link;
+  import java.lang.object;
+   import org.apache.log4j.Logger;
+  Logger custLog = Logger.getLogger("customLogger.myRule");
+  
+  Identity ide = context.getObjectByName(Identity.class,"ganesh.upreti");  
+ 
+  List links = ide.getLinks();  
+  List list1 = new ArrayList(); 
+  custLog.info("aayo"+links);
+  
+  for(Link ln:links){
+    String attr = ln.getAttribute("positionCode");
+   	list1.add(attr);
+    
+    }
+   return list1;
+    
+ 	]]></Source>
+</Rule>

@@ -1,0 +1,180 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule language="beanshell" name="JDBC_Allowed_Val1">
+  <Source><![CDATA[
+  /*
+  import sailpoint.object.Identity;
+  import sailpoint.api.SailpointContext;
+  import java.util.List;
+  import java.util.ArrayList;
+  import java.util.Map;
+  import java.util.HashMap;
+  import java.util.*;
+  import java.util.object.*;
+  import sailpoint.object.Link;
+  import java.lang.object;
+  import org.apache.log4j.Logger;
+ 
+ Logger custLog = Logger.getLogger("customLogger.myRule");
+ 
+ if(IdentityName!=null){
+ 
+ Identity ide = context.getObjectByName(Identity.class,"barack.obama");  
+ //String identName = ide.getName();
+custLog.info("This is name"+iden);
+
+ List links = ide.getLinks();  
+ List list1 = new ArrayList(); 
+ List list2 = new ArrayList();	
+ //List list3 = new ArrayList();	
+ 
+ List appName = "";
+ 
+   for(Link ln:links){
+ 	List appName = ln.getApplicationName();
+   custLog.info("getting application name"+appName);
+   if(appName.equals("JDBC Global Provisioning")){   
+   list1.add("Enable");
+   list1.add("Disable");
+   list1.add("Modify");
+   list1.add("Delete");
+  // list1.add("Create");
+     
+   return list1;
+  
+ }  else {
+   list2.add("Create");
+     return list2;
+   }
+ }
+   
+ }
+ */
+  /*
+  import sailpoint.object.Identity;
+  import sailpoint.api.SailpointContext;
+  import java.util.List;
+  import java.util.ArrayList;
+  import java.util.Map;
+  import java.util.HashMap;
+  import java.util.*;
+  import java.util.object.*;
+  import java.lang.object;
+  import org.apache.log4j.Logger; 
+	import sailpoint.object.Link;  
+	import sailpoint.object.Application;  
+
+Identity identity = context.getObjectByName(Identity.class,"george.bush");
+List links = identity.getLinks();  
+List list1 = new ArrayList();
+List list2 = new ArrayList();
+ List list3 = new ArrayList();
+for (Link link: links) {  
+  Application application = link.getApplication();  
+  String app = application.getName();
+  list1.add(app);
+}
+  
+Iterator iter= list1.iterator();
+  
+  while(iter.hasNext()){
+    if(iter.next().equals("JDBC Application Onboarding")){
+    	list2.add("Enable");
+  	  list2.add("Disable");
+  	  list2.add("Modify");
+  	  list2.add("Delete");
+    
+      return list2;
+    } 
+    
+       }
+  list3.add("Create");
+      
+      return list3;
+  
+  
+  
+  */
+  
+  
+ 
+ 
+ 
+ import sailpoint.object.Identity;
+  import sailpoint.api.SailpointContext;
+  import java.util.List;
+  import java.util.ArrayList;
+  import java.util.Map;
+  import java.util.HashMap;
+  import java.util.*;
+  import java.util.object.*;
+  import java.lang.object;
+  import org.apache.log4j.Logger; 
+	import sailpoint.object.Link;  
+	import sailpoint.object.Application;  
+
+Identity identity = context.getObjectByName(Identity.class,"gan.upreti");
+List links = identity.getLinks();  
+List list1 = new ArrayList();
+List list2 = new ArrayList();
+ List list3 = new ArrayList();
+for (Link link: links) {  
+  Application application = link.getApplication();  
+  String app = application.getName();
+  list1.add(app);
+}
+ 
+ 
+ boolean isJDBC=false;
+  for(String lt:list1) {
+  
+    if(lt.equals("JDBC Global Provisioning")){
+     
+     isJDBC=true;
+      break;
+    }
+    else {
+      
+   	isJDBC=false;
+      
+   }
+  }
+    if(isJDBC){
+    
+     list2.add("Enable");
+  	  list2.add("Disable");
+  	  list2.add("Modify");
+  	  list2.add("Delete");
+    
+    }else{
+    
+    list2.add("Create");
+    }
+    
+  
+  
+ 
+return list2;
+ 
+  /*
+    if("JDBC Global Provisioning".equals(app)){   
+   		list2.add("Enable");
+  	  list2.add("Disable");
+  	  list2.add("Modify");
+  	  list2.add("Delete");
+  
+      return list2;
+  
+ }  else {
+      
+   	list3.add("Create");
+      
+     return list3;
+   }
+  
+ }
+  
+  */
+  
+ 	]]></Source>
+</Rule>

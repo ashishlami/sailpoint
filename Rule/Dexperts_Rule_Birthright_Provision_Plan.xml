@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule language="beanshell" name="Birthright_Provision_Plan" type="Workflow">
+  <Description>A rule used by a Workflow to determine a step action or variable value.
+
+Note that an Attributes map of all variables from the current WorkflowContext, merged with the arguments from the Step, is also passed into the workflow rule.</Description>
+  <Signature returnType="Object"/>
+  <Source><![CDATA[import sailpoint.api.*;  
+import sailpoint.object.*;  
+import sailpoint.api.SailPointContext;  
+import sailpoint.object.Attributes;  
+import sailpoint.object.ProvisioningPlan.AccountRequest;  
+import sailpoint.object.ProvisioningPlan.AttributeRequest;  
+import sailpoint.object.ProvisioningPlan.Operation;  
+import sailpoint.api.Provisioner;
+import java.util.List;
+import java.util.ArrayList;  
+import sailpoint.object.ProvisioningPlan;
+import org.apache.log4j.Logger;
+
+
+  Logger custLog = Logger.getLogger("customLogger.myRule");
+  
+  System.out.println("This is identity"+identityName);
+ProvisioningPlan plan1 = new ProvisioningPlan();            
+Identity identityObject = context.getObjectByName(Identity.class, identityName);  
+         
+  System.out.println("This is identityobject"+identityObject);
+  
+  if (identityObject.getAttribute("positionCode").equals("1700")) {  
+       custLog.info("Employee... Create plan.");                                         
+       List accreqs = new ArrayList();    
+    
+String dn = "CN=" + identityName + ",OU=Reserve,OU=JobHunt,DC=dexpertrain,DC=com";
+String entit= "CN=CloundEngineer,OU=TribleByte,OU=JobHunt,DC=dexpertrain,DC=com";
+
+    
+    //create AD account  
+AccountRequest acctReq = new AccountRequest();  
+acctReq.setOperation(AccountRequest.Operation.Create);  
+acctReq.setApplication("Active Directory Application");  
+                       
+             
+acctReq.add(new AttributeRequest("sAMAccountName",Operation.Add, identityName));  
+acctReq.add(new AttributeRequest("distinguishedName",Operation.Add, dn));  
+//accReq.add(new AttributeRequest("IIQDisabled",Operation.Set,"false")); 
+acctReq.add(new AttributeRequest("*password*",Operation.Set,"P@ssword"));                
+            
+    
+    // Add birthright groups                             
+acctReq.add(new AttributeRequest("memberOf",Operation.Add, entit));  
+acctReq.add(new AttributeRequest("IIQDisabled",Operation.Set,"false"));  
+acctReq.setNativeIdentity(dn);  
+accreqs.add(acctReq);  
+plan1.setAccountRequests(accreqs);  
+plan1.setIdentity(identityObject);  
+             custLog.info("Plan = " + plan1.toXml());  
+         } else {  
+             log.debug("Contractor... NOP.");            
+         }  
+         return plan1;]]></Source>
+</Rule>

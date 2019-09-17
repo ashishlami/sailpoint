@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Application PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Application connector="sailpoint.connector.JDBCConnector" featuresString="DISCOVER_SCHEMA, PROVISIONING, SYNC_PROVISIONING, DIRECT_PERMISSIONS, SEARCH, ENABLE, UNLOCK" icon="databaseIcon" name="JDBC Global Provisioning" profileClass="" type="JDBC">
+  <Attributes>
+    <Map>
+      <entry key="SQL" value="SELECT * FROM prov191;"/>
+      <entry key="acctAggregationEnd">
+        <value>
+          <Date>1559866970340</Date>
+        </value>
+      </entry>
+      <entry key="acctAggregationStart">
+        <value>
+          <Date>1559866970014</Date>
+        </value>
+      </entry>
+      <entry key="afterProvisioningRule"/>
+      <entry key="aggregationMode">
+        <value>
+          <Boolean/>
+        </value>
+      </entry>
+      <entry key="beforeProvisioningRule"/>
+      <entry key="compositeDefinition"/>
+      <entry key="deltaTable"/>
+      <entry key="driverClass" value="com.mysql.jdbc.Driver"/>
+      <entry key="getDeltaSQL"/>
+      <entry key="isPermissionEnabled">
+        <value>
+          <Boolean/>
+        </value>
+      </entry>
+      <entry key="jdbcProvisionRule" value="JDBC_Global_Provisioning"/>
+      <entry key="mergeRows">
+        <value>
+          <Boolean/>
+        </value>
+      </entry>
+      <entry key="nativeChangeDetectionAttributeScope" value="entitlements"/>
+      <entry key="nativeChangeDetectionAttributes"/>
+      <entry key="nativeChangeDetectionEnabled">
+        <value>
+          <Boolean/>
+        </value>
+      </entry>
+      <entry key="nativeChangeDetectionOperations"/>
+      <entry key="partitionMode">
+        <value>
+          <Boolean/>
+        </value>
+      </entry>
+      <entry key="partitionStatements"/>
+      <entry key="password" value="1:xDikd6BMwY+LL9iXETAjBg=="/>
+      <entry key="provisionRule" value="globalRule"/>
+      <entry key="sysDescriptions">
+        <value>
+          <Map>
+            <entry key="en_US"/>
+          </Map>
+        </value>
+      </entry>
+      <entry key="templateApplication" value="JDBC Template"/>
+      <entry key="testConnSQL"/>
+      <entry key="url" value="jdbc:mysql://localhost/JDBC_Provisioning1"/>
+      <entry key="useExecuteQuery">
+        <value>
+          <Boolean/>
+        </value>
+      </entry>
+      <entry key="user" value="root"/>
+    </Map>
+  </Attributes>
+  <Owner>
+    <Reference class="sailpoint.object.Identity" name="spadmin"/>
+  </Owner>
+  <Schemas>
+    <Schema displayAttribute="" identityAttribute="UserName" instanceAttribute="" nativeObjectType="account" objectType="account" permissionsRemediationModificationType="None">
+      <AttributeDefinition name="UserName" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="FirstName" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="LastName" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="Email" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="managerId" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="PositionCode" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="jobcode" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="Country" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="gender" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition name="Status" type="string">
+        <Description/>
+      </AttributeDefinition>
+      <AttributeDefinition entitlement="true" managed="true" multi="true" name="Role" type="string">
+        <Description/>
+      </AttributeDefinition>
+    </Schema>
+  </Schemas>
+  <ApplicationScorecard/>
+</Application>

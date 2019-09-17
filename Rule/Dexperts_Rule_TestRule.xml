@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule language="beanshell" name="TestRule">
+  <Source><![CDATA[import sailpoint.object.ApplicationActivity;
+  import sailpoint.object.Configuration;
+	
+//  System.out.println("CEFActivityCorrelation: In Correlation Rule");
+
+    Map returnMap = new HashMap();
+    String user = activity.getUser();
+	String cefLinkAttributeName = Configuration.getSystemConfig().getString(Configuration.ATT_CEF_LINK_ATTRIBUTE_NAME);
+	
+    if ( user != null ) {
+//		System.out.println("CEFActivityCorrelation: Matching for user " + user);
+        returnMap.put("linkAttributeName", cefLinkAttributeName);
+        returnMap.put("linkAttributeValue", user);
+//        System.out.println("returnMap " + returnMap);
+    }
+
+    return returnMap;]]></Source>
+</Rule>

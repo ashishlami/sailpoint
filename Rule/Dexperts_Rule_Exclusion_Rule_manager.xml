@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule language="beanshell" name="Exclusion_Rule_manager" type="CertificationExclusion">
+  <Description>This rule is an example Certification Exclusion rule that removes all of the certifiable items from a certification if the identity being certified is marked as inactive.</Description>
+  <Signature returnType="String"/>
+  <Source><![CDATA[
+import java.util.Iterator;
+import java.util.List;
+import sailpoint.object.Bundle;
+import sailpoint.object.Certifiable;
+import sailpoint.object.*;
+import sailpoint.object.EntitlementGroup;
+  
+String excludeGroup = "CN=Analyst,OU=linkedlin,OU=JobHunt,DC=dexpertrain,DC=com";
+
+Iterator iter = items.iterator();
+
+HashMap groupMap = new HashMap();
+
+while (iter.hasNext()) {
+
+EntitlementGroup item = (EntitlementGroup) iter.next();
+Attributes attrs = item.getAttributes();
+groupMap = attrs.getMap();
+
+for(String key: groupMap.keySet()) {
+
+String groupName = groupMap.get(key); 
+if(groupName.endsWith(excludeGroup)) {
+  itemsToExclude.add(item);
+  iter.remove();
+
+     }
+}
+
+}
+
+//item.removeAll(itemsToExclude);
+
+ 
+
+ 
+
+return "Removed Entitlement Domain Admins";]]></Source>
+</Rule>

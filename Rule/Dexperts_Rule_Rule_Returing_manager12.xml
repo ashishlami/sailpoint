@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule language="beanshell" name="Rule_Returing_manager12">
+  <Source><![CDATA[
+
+import sailpoint.object.*;
+import org.apache.log4j.Logger;
+import java.util.*;
+import sailpoint.object.Identity;
+ 
+Logger custLog = Logger.getLogger("customLogger.myRule");
+custLog.info("Logger Working");
+  
+  
+  Filter f = Filter.eq("Identity.managerStatus", true);
+  QueryOptions qo = new QueryOptions();
+  qo.addFilter(f);
+
+  List iden = context.getObjects(Identity.class,qo);
+  List list1 = new ArrayList();
+  
+  for ( Identity manager : iden) {
+   String manager1 = manager.getName();
+   	custLog.info("manager1"+manager1);
+   
+    list1.add(manager1);
+  }
+  
+  
+return list1;
+
+
+ 	]]></Source>
+</Rule>

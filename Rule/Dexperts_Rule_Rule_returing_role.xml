@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule language="beanshell" name="Rule_returing_role">
+  <Source><![CDATA[
+  
+   import sailpoint.object.Identity;
+   import sailpoint.api.SailpointContext;
+   import java.util.List;
+   import java.util.ArrayList;
+   import java.util.Map;
+   import java.util.HashMap;
+   import java.util.*;
+   import java.util.object.*;
+ 	 import sailpoint.object.Link;
+   import java.lang.object;
+   import org.apache.log4j.Logger;
+   import sailpoint.object.Bundle;
+	
+  Logger custLog = Logger.getLogger("customLogger.myRule");
+  
+  List identity = context.getObjects(Identity.class);  
+  List list1 = new ArrayList();
+  
+  for (Identity iden: identity) { 
+    List bundle1 = iden.getBundles(); 
+  	custLog.info("aayo"+bundle1);
+    
+    for ( Bundle bn: bundle1) {
+    String bunName = bn.getName();
+      list1.add(bunName);
+    
+    }
+    
+   // String bunName = bundle1.getName;
+    //list1.add(bunName);
+  }
+  
+  //List bundle1 = ide.getBundles();  
+  //List list1 = new ArrayList(); 
+ // custLog.info("aayo"+bundle1);
+  
+  //for(Bundle bn:bundle1){
+   //String bunName = bn.getName();
+   	//list1.add(bunName); 
+     
+    // Map map = new HashMap();
+     //map.put("name",name);  
+     //map.put("entitlment",entitlement);
+     //list.add(map); 
+   //}
+ 
+  return list1;
+     
+    
+ 	]]></Source>
+</Rule>

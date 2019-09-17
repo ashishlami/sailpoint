@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule language="beanshell" name="custom_rule_extentedattribute1">
+  <Description>Test rule to get all entitlements from one application </Description>
+  <Source><![CDATA[
+  import sailpoint.object.*;
+ 	import org.apache.log4j.Logger;
+	
+  Logger custLog = Logger.getLogger("customLogger.logfromruleName");
+
+ 
+ Filter f1 = Filter.eq("Application.name", "Active Directory Application");
+ QueryOptions qo = new QueryOptions();
+ qo.addFilter(f1);
+  
+ List application = context.getObjects(Application.class, qo);
+  
+  
+  for (Application app:application) {
+  	app.setAttribute("SOXCompliance", "true");   
+    
+    context.saveObject(app);
+    context.commitTransaction();
+  
+  }
+  
+  
+  ]]></Source>
+</Rule>

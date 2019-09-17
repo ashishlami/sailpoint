@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE ManagedAttribute PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<ManagedAttribute attribute="Role" hash="769a440d8dc4ccf48400d2dd510739dda01bf6f1" requestable="true" type="Entitlement" value="Developer">
+  <ApplicationRef>
+    <Reference class="sailpoint.object.Application" name="JDBC Provisioning Application1"/>
+  </ApplicationRef>
+  <Attributes>
+    <Map>
+      <entry key="sysDescriptions">
+        <value>
+          <Map>
+            <entry key="en_US" value="This is requestable entitlement"/>
+          </Map>
+        </value>
+      </entry>
+    </Map>
+  </Attributes>
+  <Owner>
+    <Reference class="sailpoint.object.Identity" name="spadmin"/>
+  </Owner>
+</ManagedAttribute>

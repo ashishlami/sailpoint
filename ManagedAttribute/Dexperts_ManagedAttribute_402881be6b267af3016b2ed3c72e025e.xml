@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE ManagedAttribute PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<ManagedAttribute aggregated="true" attribute="memberOf" displayName="DEXPERTRAIN\DataScience" hash="8235485950efef54f865f0f28fe5d50dab63a3aa" lastRefresh="1559859124267" type="group" uuid="{a6b0ad95-2911-44ea-bfe2-d9e286ba6b38}" value="CN=DataScience,OU=TribleByte,OU=JobHunt,DC=dexpertrain,DC=com">
+  <ApplicationRef>
+    <Reference class="sailpoint.object.Application" name="Active Directory Application"/>
+  </ApplicationRef>
+  <Attributes>
+    <Map>
+      <entry key="GroupScope" value="Global"/>
+      <entry key="GroupType" value="Security"/>
+      <entry key="cn" value="DataScience"/>
+      <entry key="msDS-PrincipalName" value="DEXPERTRAIN\DataScience"/>
+      <entry key="objectSid" value="S-1-5-21-3524962787-4087557611-1025314962-1128"/>
+      <entry key="objectguid" value="{a6b0ad95-2911-44ea-bfe2-d9e286ba6b38}"/>
+      <entry key="sAMAccountName" value="DataScience"/>
+      <entry key="sysDescriptions">
+        <value>
+          <Map>
+            <entry key="en_US" value="This is requestable entitlement"/>
+          </Map>
+        </value>
+      </entry>
+    </Map>
+  </Attributes>
+  <Owner>
+    <Reference class="sailpoint.object.Identity" name="spadmin"/>
+  </Owner>
+</ManagedAttribute>

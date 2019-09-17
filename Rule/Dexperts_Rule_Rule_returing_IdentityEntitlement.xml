@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule language="beanshell" name="Rule_returing_IdentityEntitlement">
+  <Source><![CDATA[
+
+ import sailpoint.object.Filter;
+ import sailpoint.object.QueryOptions;
+ import sailpoint.object.IdentityEntitlement;
+ import sailpoint.object.Entitlement;
+ import sailpoint.object.ManagedAttribute; 
+ import org.apache.log4j.Logger;
+ import java.util.*;
+ 
+Logger custLog = Logger.getLogger("customLogger.myRule");
+custLog.info("Logger Working");
+  
+  String nm = "CN=Andrew Marcelo,OU=linkedlin,OU=JobHunt,DC=dexpertrain,DC=com";
+  
+  Filter f = Filter.eq("identity.name", nm);
+  QueryOptions qo = new QueryOptions();
+  qo.addFilter(f);
+
+  Iterator it = context.search(IdentityEntitlement.class, qo, "id");
+  List entitlements = new ArrayList();
+
+custLog.info("Getting things"+it);
+  while(it.hasNext()) {
+
+       IdentityEntitlement ie = context.getObjectById(IdentityEntitlement.class, (String)(it.next()[0]));
+			 QueryOptions ops = new QueryOptions();
+			 Filter f1 = Filter.eq("value", ie.value);
+			 ops.addFilter(f1);
+ 			 custLog.info("ie = " + ie.toXml());
+    
+  		List ent = context.getObjects(ManagedAttribute.class, ops);
+   
+   
+    ManagedAttribute ma=ent.get(0);
+    String mang = ma.getValue();
+   
+    entitlements.add(mang);
+    }
+  
+
+
+ return entitlements;
+
+       
+
+ // sailpoint.tools.Util.flushIterator(it);
+ 	]]></Source>
+</Rule>

@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule language="beanshell" name="Returning_EntitlementGroup">
+  <Description>Test rule to get all entitlements from one application </Description>
+  <Source><![CDATA[
+ import sailpoint.object.*;
+ import org.apache.log4j.Logger;
+ import sailpoint.object.Identity;
+Logger custLog = Logger.getLogger("customLogger.myRule");
+  
+
+  List ide = context.getObjects(Identity.class);  
+ custLog.info("I am getting identity"+ide);
+  
+  List list1 = new ArrayList(); 
+  for ( Identity iden : ide) {
+  List entitlement = iden.getExceptions();  
+  
+  custLog.info("aayo"+bundle1);
+  
+  for(EntitlementGroup en: entitlement){
+   String eunName = en.getDisplayName();
+   	list1.add(eunName); 
+     
+    // Map map = new HashMap();
+     //map.put("name",name);  
+     //map.put("entitlment",entitlement);
+     //list.add(map); 
+   }
+  }
+  return list1;
+     ]]></Source>
+</Rule>

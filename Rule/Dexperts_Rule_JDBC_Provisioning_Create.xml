@@ -1,0 +1,162 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule language="beanshell" name="JDBC_Provisioning_Create" type="JDBCOperationProvisioning">
+  <Description>This rule is used by the JDBC connector to do provisioning of the data .</Description>
+  <Signature returnType="ProvisioningResult">
+    <Inputs>
+      <Argument name="log">
+        <Description>
+          The log object associated with the SailPointContext.
+        </Description>
+      </Argument>
+      <Argument name="context">
+        <Description>
+          A sailpoint.api.SailPointContext object that can be used to query the database if necessary.
+        </Description>
+      </Argument>
+      <Argument name="application">
+        <Description>The application whose data file is being processed.</Description>
+      </Argument>
+      <Argument name="schema">
+        <Description>The Schema currently in use.</Description>
+      </Argument>
+      <Argument name="connection">
+        <Description>A connection object to connect to database.</Description>
+      </Argument>
+      <Argument name="plan">
+        <Description>The ProvisioningPlan created against the JDBC application.</Description>
+      </Argument>
+      <Argument name="request">
+        <Description>The ProvisioningRequest created against the JDBC application.</Description>
+      </Argument>
+    </Inputs>
+    <Returns>
+      <Argument name="result">
+        <Description>A Provisioning Result object is desirable to return the status.IT can be a new object or part of  Provisioning Plan</Description>
+      </Argument>
+    </Returns>
+  </Signature>
+  <Source><![CDATA[import java.util.List;
+import java.sql.Statement;
+import sailpoint.object.*;
+import sailpoint.object.ProvisioningPlan.AccountRequest;
+import sailpoint.object.ProvisioningPlan.AttributeRequest;
+import org.apache.log4j.Logger;
+ 
+	
+Logger custLog = Logger.getLogger("customLogger.myRule");
+
+System.out.println(plan.toXml());
+  
+String userid=plan.getNativeIdentity();
+String firstName="";
+String lastName="";
+String email="";
+String managerId = "";
+String PositionCode = "";
+String Jobcode= "";
+String Status = "";
+String country = "";
+String gender="";
+String role="";
+  
+custLog.info("this is plan"+plan);
+custLog.info("userid"+userid);
+  
+Identity iden = context.getObjectByName(Identity.class,userid);
+firstName = iden.getFirstname();
+lastName = iden.getLastname();
+custLog.info("getting lastname"+lastName);
+
+  
+  
+custLog.info("Gettting Identity object"+iden);
+System.out.println(userid);
+System.out.println("2");
+  
+
+custLog.info("2");
+  
+		List accReqList = plan.getAccountRequests("JDBC Provisioning Application1");
+    int a =accReqList.size();
+    System.out.println(Integer.toString(a));
+    System.out.println("3");
+  	custLog.info("size of accReqList"+Integer.toString(a));
+  	custLog.info("Getting list of accReqList"+accReqList);
+  
+  
+		AccountRequest accRequest = accReqList.get(0);
+		custLog.info("4");
+  	System.out.println("4");
+		
+		List attributeReqList = accRequest.getAttributeRequests();
+   	System.out.println("6");
+		custLog.info("Getting list of AttributeRequest"+attributeReqList);
+		
+  for (AttributeRequest req : attributeReqList ) {
+			if (req.getName().equals("Role")) {
+				role = (String)req.getValue();
+			}
+    
+    if (req.getName().equals("JobCode")) {
+				Jobcode = (String)req.getValue();
+			}
+    
+    if (req.getName().equals("email")) {
+				email = (String)req.getValue();
+			}
+    if (req.getName().equals("gender")) {
+				gender = (String)req.getValue();
+			}
+    
+    if (req.getName().equals("PositionCode")) {
+				PositionCode = (String)req.getValue();
+			}
+    if (req.getName().equals("Status")) {
+				Status = (String)req.getValue();
+			}
+    
+    if (req.getName().equals("Country")) {
+				country = (String)req.getValue();
+			}
+   if (req.getName().equals("managerId")) {
+			managerId = (String)req.getValue();
+			}
+    
+    
+  }
+
+
+StringBuffer queryBuffer = new StringBuffer();
+queryBuffer.append("Insert into JDBC_Provisioning1.prov190(UserName,FirstName,LastName,Email,managerId,PositionCode,jobcode,Country,gender,Status,Role)  value(");
+    
+queryBuffer.append("'"+userid+"'");
+queryBuffer.append(",'"+firstName+"'");
+queryBuffer.append(",'"+lastName+"'");
+queryBuffer.append(",'"+email+"'");
+queryBuffer.append(",'"+managerId+"'");
+queryBuffer.append(",'"+PositionCode+"'");
+queryBuffer.append(",'"+Jobcode+"'");
+queryBuffer.append(",'"+country+"'");
+queryBuffer.append(",'"+gender+"'");   
+queryBuffer.append(",'"+Status+"'");
+queryBuffer.append(",'"+role+"'"+")");
+ System.out.println("7");
+
+Statement stmt =null;
+String query = queryBuffer.toString();
+System.out.println(query);
+  
+		ProvisioningResult result = new ProvisioningResult();
+		try {
+			stmt = connection.createStatement();
+			stmt.execute(query);
+		}catch (Exception e) {
+		result.addError(e.getMessage());
+		result.setStatus(ProvisioningResult.STATUS_FAILED);
+		}finally {
+			if (stmt !=null)
+				stmt.close();	
+		}
+	return result;]]></Source>
+</Rule>

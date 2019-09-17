@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Workflow PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Workflow explicitTransitions="true" libraries="Identity" name="Cus: Lifecycle Event - Joiner" type="IdentityLifecycle">
+  <Variable input="true" name="trigger">
+    <Description>The IdentityTrigger</Description>
+  </Variable>
+  <Variable input="true" name="event" transient="true">
+    <Description>The IdentityChangeEvent.  It can be used to build
+      the provisioning plan, but does not need to be
+      persisted with the case, so marked as transient.</Description>
+  </Variable>
+  <Variable input="true" name="identityName">
+    <Description>The name of the identity.</Description>
+  </Variable>
+  <Variable input="true" name="plan" output="true"/>
+  <Variable input="true" name="project" output="true"/>
+  <Variable name="trace"/>
+  <Description>Process a new employee.</Description>
+  <Step icon="Start" name="Start" posX="28" posY="10">
+    <Transition to="provisioningPlan"/>
+  </Step>
+  <Step icon="Stop" name="Stop" posX="612" posY="121"/>
+  <Step action="rule:Birthright_Provision_Plan" icon="Default" name="provisioningPlan" posX="191" posY="117" resultVariable="plan">
+    <Transition to="compilePlan"/>
+  </Step>
+  <Step action="compileProvisioningProject" icon="Default" name="compilePlan" posX="317" posY="162" resultVariable="project">
+    <Arg name="plan" value="ref:plan"/>
+    <Transition to="provisionProject"/>
+  </Step>
+  <Step action="provisionProject" icon="Default" name="provisionProject" posX="463" posY="176">
+    <Arg name="project" value="ref:project"/>
+    <Arg name="plan" value="ref:plan"/>
+    <Transition to="Stop"/>
+  </Step>
+</Workflow>

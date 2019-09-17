@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule language="beanshell" name="Returning_Entitlement">
+  <Description>Test rule to get all entitlements from one application </Description>
+  <Source><![CDATA[
+  import sailpoint.object.*;
+ 	import org.apache.log4j.Logger;
+	
+  Logger custLog = Logger.getLogger("customLogger.logfromruleName");
+
+  
+  Filter f1 = Filter.eq("application.name","Active Directory Application");
+	custLog.info("filter aayo"+f1);
+  
+   QueryOptions qo = new QueryOptions();
+
+   qo.addFilter(f1);
+
+   List managedAttributes = context.getObjects(ManagedAttribute.class, qo); 
+  
+   List list = new ArrayList();
+ 
+
+   for (ManagedAttribute ent : managedAttributes){
+  
+   String attribute = ent.getValue();
+     custLog.info("Getting value"+attribute);
+   String attr = ent.getAttribute();
+     custLog.info("getting Attribute"+attr);
+    
+     list.add(attr);
+     list.add(attribute);
+    
+   }
+  
+  return list;
+    
+  ]]></Source>
+</Rule>

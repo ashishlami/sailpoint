@@ -1,0 +1,85 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule language="beanshell" name="ExampleRule" type="BuildMap">
+  <Description>This basic rule performs the combines 2 values into a single attribute.</Description>
+  <Signature returnType="Map">
+    <Inputs>
+      <Argument name="log">
+        <Description>
+          The log object associated with the SailPointContext.
+        </Description>
+      </Argument>
+      <Argument name="context">
+        <Description>
+          A sailpoint.api.SailPointContext object that can be used to query the database if necessary.
+        </Description>
+      </Argument>
+      <Argument name="application">
+        <Description>
+          The application whose data file is being processed.
+        </Description>
+      </Argument>
+      <Argument name="schema">
+        <Description>
+          The Schema currently in use.
+        </Description>
+      </Argument>
+      <Argument name="state">
+        <Description>
+          A Map containing state information.
+        </Description>
+      </Argument>
+      <Argument name="record">
+        <Description>
+          A List of data tokens parsed from the current line of the data file.
+        </Description>
+      </Argument>
+      <Argument name="cols">
+        <Description>
+          A List of the columns to use.
+        </Description>
+      </Argument>
+    </Inputs>
+    <Returns>
+      <Argument name="map">
+        <Description>
+          A Map of the resource object assembled from the data.
+        </Description>
+      </Argument>
+    </Returns>
+  </Signature>
+  <Source><![CDATA[import sailpoint.connector.DelimitedFileConnector;
+import java.util.*;
+import org.apache.log4j.Logger;
+
+  Logger custLog = Logger.getLogger("customLogger.logfromruleName");
+	custLog.info("This is an info message.");
+
+    
+    
+     Map map = DelimitedFileConnector.defaultBuildMap(cols, record);
+     custLog.info("BuildMap rule");
+
+
+     String strApp = (String) map.get("firstName");
+
+     String strRights = (String) map.get("email");
+
+    //Manipulate Target and Rights into Permissions
+custLog.info(strApp);
+custLog.info(strRights);
+
+
+     if ( strApp != null && strRights != null ) {
+
+          map.remove("firstName");
+
+          map.remove("email");
+          String access = (strApp + " - " + strRights);
+          custLog.info(access);
+          map.put("access", strApp + " - " + strRights);
+
+     }
+
+     return map;]]></Source>
+</Rule>

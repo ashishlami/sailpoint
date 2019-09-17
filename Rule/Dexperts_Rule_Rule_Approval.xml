@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule language="beanshell" name="Rule_Approval">
+  <Source><![CDATA[
+
+import sailpoint.object.*;
+import org.apache.log4j.Logger;
+import java.util.*;
+ 
+Logger custLog = Logger.getLogger("customLogger.myRule");
+custLog.info("Logger Working");
+ 
+Identity iden = context.getObjectByName(Identity.class,"manish.shrestha");
+String managerIdentity = iden.getManager().getName();
+List list1 = new ArrayList();
+  
+  list1.add(managerIdentity);
+  
+return list1;
+
+ 	]]></Source>
+</Rule>

@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule language="beanshell" name="Rule_returing_application">
+  <Source><![CDATA[
+  
+   import sailpoint.object.Identity;
+   import sailpoint.api.SailpointContext;
+   import java.util.List;
+   import java.util.ArrayList;
+   import java.util.Map;
+   import java.util.HashMap;
+   import java.util.*;
+   import java.util.object.*;
+  import sailpoint.object.Link;
+  import java.lang.object;
+   import org.apache.log4j.Logger;
+	
+  Logger custLog = Logger.getLogger("customLogger.myRule");
+  
+  Identity ide = context.getObjectByName(Identity.class,"gan.upreti");  
+ // Application application = context.getObjectByName(Application.class, "Active Directory Application");  
+ 
+  List links = ide.getLinks();  
+  List list1 = new ArrayList(); 
+  custLog.info("aayo"+links);
+  
+  for(Link ln:links){
+   String appName = ln.getApplicationName();
+   	list1.add(appName); 
+     
+    // Map map = new HashMap();
+     //map.put("name",name);  
+     //map.put("entitlment",entitlement);
+     //list.add(map); 
+   }
+ 
+  return list1;
+     
+    
+ 	]]></Source>
+</Rule>

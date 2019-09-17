@@ -1,0 +1,411 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Workflow PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Workflow explicitTransitions="true" name="JDBC_Provisioning1" type="LCMProvisioning">
+  <Variable input="true" name="project" output="true"/>
+  <Variable input="true" name="plan" output="true"/>
+  <Variable input="true" name="approvalSet"/>
+  <Variable initializer="ref:launcher" input="true" name="launcher"/>
+  <Variable initializer="ref:IdentityName" input="true" name="IdentityName"/>
+  <Variable initializer="LCM User Notification" name="userEmailTemplate"/>
+  <Step icon="Default" name="form" posX="73" posY="135">
+    <Approval name="JDBC Provisioning" owner="spadmin" return="IdentityName,ApplicationName,AdOperation,EntitleMent" send="IdentityName,ApplicationName,AdOperation,EntitleMent">
+      <Form name="JDBC Provisioning">
+        <Attributes>
+          <Map>
+            <entry key="pageTitle" value="JDBC Provisioning"/>
+            <entry key="title" value="Provisioning"/>
+          </Map>
+        </Attributes>
+        <Description>Provisioning in JDBC.</Description>
+        <Section name="Identity">
+          <Field displayName="Identity" helpKey="Please select identity." name="IdentityName" postBack="true" required="true" type="sailpoint.object.Identity"/>
+        </Section>
+        <Section name="Application">
+          <Field displayName="Application" filterString="name.startsWith(&quot;JDBC Global Provisioning&quot;)" helpKey="Please select application." name="ApplicationName" postBack="true" required="true" type="Application">
+            <Attributes>
+              <Map>
+                <entry key="hidden">
+                  <value>
+                    <Script>
+                      <Source><![CDATA[if (IdentityName==null) {
+return true;
+} else {
+return false;
+}]]></Source>
+                    </Script>
+                  </value>
+                </entry>
+              </Map>
+            </Attributes>
+          </Field>
+        </Section>
+        <Section name="Entitlement">
+          <Field displayName="Entitlement" name="EntitleMent" postBack="true" required="true" type="string">
+            <AllowedValuesDefinition>
+              <Script>
+                <Source><![CDATA[import sailpoint.object.*;
+ 	import org.apache.log4j.Logger;
+  import sailpoint.object.ManagedAttribute;
+	
+  Logger custLog = Logger.getLogger("customLogger.logfromruleName");
+	
+ Filter f1 = Filter.eq("application.name", "JDBC Global Provisioning");
+ 	QueryOptions qo = new QueryOptions();
+ 	qo.addFilter(f1);
+  
+  List manageAttribute = context.getObjects(ManagedAttribute.class, qo);
+  List list1 = new ArrayList();
+  for ( ManagedAttribute manage : manageAttribute) {
+    
+    //manage.addDescription("Description", "This is requestable entitlement");
+   String manage1 =	manage.getValue();
+    list1.add(manage1);
+    }
+    
+   return list1;]]></Source>
+              </Script>
+            </AllowedValuesDefinition>
+            <Attributes>
+              <Map>
+                <entry key="hidden">
+                  <value>
+                    <Script>
+                      <Source><![CDATA[if (ApplicationName==null) {
+return true;
+} else {
+return false;
+}]]></Source>
+                    </Script>
+                  </value>
+                </entry>
+              </Map>
+            </Attributes>
+          </Field>
+        </Section>
+        <Section name="Operation">
+          <Field displayName="Operation" helpKey="Please select operation." name="AdOperation" type="string">
+            <AllowedValuesDefinition>
+              <Script>
+                <Source><![CDATA[import sailpoint.object.Identity;
+  import sailpoint.api.SailpointContext;
+  import java.util.List;
+  import java.util.ArrayList;
+  import java.util.Map;
+  import java.util.HashMap;
+  import java.util.*;
+  import java.util.object.*;
+  import java.lang.object;
+  import org.apache.log4j.Logger; 
+	import sailpoint.object.Link;  
+	import sailpoint.object.Application;  
+
+  if(IdentityName!=null){
+Identity identity = context.getObjectById(Identity.class,IdentityName);
+List links = identity.getLinks();  
+List list1 = new ArrayList();
+List list2 = new ArrayList();
+ List list3 = new ArrayList();
+for (Link link: links) {  
+  Application application = link.getApplication();  
+  String app = application.getName();
+  list1.add(app);
+}
+ 
+ 
+ boolean isJDBC=false;
+  for(String lt:list1) {
+  
+    if(lt.equals("JDBC Global Provisioning")){
+     
+     isJDBC=true;
+      break;
+    }
+    else {
+      
+   	isJDBC=false;
+      
+   }
+  }
+    if(isJDBC){
+    
+     list2.add("Enable");
+  	  list2.add("Disable");
+  	  list2.add("Modify");
+  	  list2.add("Delete");
+    
+    }else{
+    
+    list2.add("Create");
+    }
+    
+  
+  
+ 
+return list2;
+ }]]></Source>
+              </Script>
+            </AllowedValuesDefinition>
+            <Attributes>
+              <Map>
+                <entry key="hidden">
+                  <value>
+                    <Script>
+                      <Source><![CDATA[if(EntitleMent==null) {
+return true;
+} else {
+return false;
+}]]></Source>
+                    </Script>
+                  </value>
+                </entry>
+              </Map>
+            </Attributes>
+          </Field>
+        </Section>
+        <Button action="next" label="Next"/>
+        <Button action="back" label="Back"/>
+      </Form>
+    </Approval>
+    <Transition to="ProvisionPlan"/>
+  </Step>
+  <Step icon="Start" name="Start" posX="24" posY="30">
+    <Transition to="form"/>
+  </Step>
+  <Step icon="Stop" name="Stop" posX="829" posY="50"/>
+  <Step action="rule:ProvisionPlan_JDBC" icon="Default" name="ProvisionPlan" posX="157" posY="19" resultVariable="plan">
+    <Arg name="JobCode">
+      <Script>
+        <Source><![CDATA[ import sailpoint.object.Identity;
+   import sailpoint.api.SailpointContext;
+   import java.util.List;
+   import java.util.ArrayList;
+   import java.util.*;
+   import java.util.object.*;
+  import sailpoint.object.Link;
+  import java.lang.object;
+   import org.apache.log4j.Logger;
+  Logger custLog = Logger.getLogger("customLogger.myRule");
+  
+  Identity ide = context.getObjectById(Identity.class,IdentityName);  
+ 
+  List links = ide.getLinks();  
+  List jobcode = new ArrayList(); 
+  custLog.info("aayo"+links);
+  
+  for(Link ln:links){
+    String attr = ln.getAttribute("jobCode");
+ if(attr != null){
+   	jobcode.add(attr);
+    }
+    }
+   return jobcode;
+    ]]></Source>
+      </Script>
+    </Arg>
+    <Arg name="Country">
+      <Script>
+        <Source><![CDATA[ import sailpoint.object.Identity;
+   import sailpoint.api.SailpointContext;
+   import java.util.List;
+   import java.util.ArrayList;
+   import java.util.*;
+   import java.util.object.*;
+  import sailpoint.object.Link;
+  import java.lang.object;
+   import org.apache.log4j.Logger;
+  Logger custLog = Logger.getLogger("customLogger.myRule");
+  
+  Identity ide = context.getObjectById(Identity.class,IdentityName);  
+ 
+  List links = ide.getLinks();  
+  List country = new ArrayList(); 
+  custLog.info("aayo"+links);
+  
+  for(Link ln:links){
+    String attr = ln.getAttribute("Country");
+   if(attr != null){
+   	country.add(attr);
+    }
+    }
+   return country;
+    ]]></Source>
+      </Script>
+    </Arg>
+    <Arg name="Gender">
+      <Script>
+        <Source><![CDATA[ import sailpoint.object.Identity;
+   import sailpoint.api.SailpointContext;
+   import java.util.List;
+   import java.util.ArrayList;
+   import java.util.*;
+   import java.util.object.*;
+  import sailpoint.object.Link;
+  import java.lang.object;
+   import org.apache.log4j.Logger;
+  Logger custLog = Logger.getLogger("customLogger.myRule");
+  
+  Identity ide = context.getObjectById(Identity.class,IdentityName);  
+ 
+  List links = ide.getLinks();  
+  List gend = new ArrayList(); 
+  custLog.info("aayo"+links);
+  
+  for(Link ln:links){
+    String attr = ln.getAttribute("gender");
+ if(attr != null){
+   	gend.add(attr);
+    
+    }
+}
+   return gend;
+    ]]></Source>
+      </Script>
+    </Arg>
+    <Arg name="plan" value="ref:plan"/>
+    <Arg name="PositionCode">
+      <Script>
+        <Source><![CDATA[ import sailpoint.object.Identity;
+   import sailpoint.api.SailpointContext;
+   import java.util.List;
+   import java.util.ArrayList;
+   import java.util.*;
+   import java.util.object.*;
+  import sailpoint.object.Link;
+  import java.lang.object;
+   import org.apache.log4j.Logger;
+  Logger custLog = Logger.getLogger("customLogger.myRule");
+  
+  Identity ide = context.getObjectById(Identity.class,IdentityName);  
+ 
+  List links = ide.getLinks();  
+  List position = new ArrayList(); 
+  custLog.info("aayo"+links);
+  
+  for(Link ln:links){
+    String attr = ln.getAttribute("positionCode");
+     if(attr != null){
+   	position.add(attr);
+    }
+}
+   return position;]]></Source>
+      </Script>
+    </Arg>
+    <Arg name="IdentityName" value="ref:IdentityName"/>
+    <Transition to="Build Approval Set"/>
+  </Step>
+  <Step action="compileProvisioningProject" icon="Default" name="CompileProvisionPlan" posX="307" posY="7" resultVariable="project">
+    <Arg name="project" value="ref:project"/>
+    <Arg name="plan" value="ref:plan"/>
+    <Arg name="IdentityName" value="ref:IdentityName"/>
+    <Transition to="Create Identity Request"/>
+  </Step>
+  <Step action="provisionProject" icon="Default" name="provisionProject" posX="578" posY="147">
+    <Arg name="project" value="ref:project"/>
+    <Arg name="plan" value="ref:plan"/>
+    <Arg name="IdentityName" value="ref:IdentityName"/>
+    <Transition to="Email Send"/>
+  </Step>
+  <Step action="sendEmail" icon="Default" name="Email Send" posX="678" posY="145">
+    <Arg name="template" value="ref:userEmailTemplate"/>
+    <Arg name="approvalSet" value="ref:approvalSet"/>
+    <Arg name="to">
+      <Script>
+        <Source><![CDATA[Identity iden = context.getObjectById(Identity.class,IdentityName);
+String identity = iden.getName();
+
+return identity;]]></Source>
+      </Script>
+    </Arg>
+    <Transition to="Audit"/>
+  </Step>
+  <Step action="buildApprovalSet" icon="Default" name="Build Approval Set" posX="247" posY="117" resultVariable="approvalSet">
+    <Arg name="plan" value="ref:plan"/>
+    <Transition to="CompileProvisionPlan"/>
+  </Step>
+  <Step action="createIdentityRequest" icon="Default" name="Create Identity Request" posX="369" posY="127" resultVariable="identityRequest">
+    <Arg name="approvalSet" value="ref:approvalSet"/>
+    <Arg name="project" value="ref:project"/>
+    <Transition to="Build Approval Form"/>
+  </Step>
+  <Step action="buildPlanApprovalForm" icon="Default" name="Build Approval Form" posX="440" posY="20" resultVariable="approvalForm">
+    <Arg name="template" value="ref:formTemplate"/>
+    <Arg name="plan" value="ref:plan"/>
+    <Transition to="NewManager Approval"/>
+  </Step>
+  <Step icon="Default" name="NewManager Approval" posX="517" posY="59">
+    <Approval description="Testing" mode="any" name="Manager Approval" owner="script:return &quot;barack.obama&quot;;" renderer="lcmWorkItemRenderer.xhtml" return="list1,plan,approvalSet" send="list1,plan,approvalSet,identityRequestId">
+      <Arg name="workItemNotificationTemplate" value="ref:userEmailTemplate"/>
+      <Arg name="approvalSet" value="ref:approvalSet"/>
+      <Arg name="workItemDescription" value="Manager Approval - Account Changes for User: $(identityDisplayName)"/>
+      <Arg name="workItemElectronicSignature" value="ref:approverElectronicSignature"/>
+      <Arg name="workItemForm" value="ref:approvalForm"/>
+      <Arg name="workItemIdentityRequestId" value="ref:identityRequestId"/>
+      <Arg name="workItemNotificationTemplate" value="ref:approvalEmailTemplate"/>
+      <Arg name="workItemPriority" value="ref:priority"/>
+      <Arg name="workItemRequester" value="$(launcher)"/>
+      <Arg name="workItemType" value="Approval"/>
+      <Arg name="identityRequestId" value="ref:identityRequestId"/>
+      <Arg name="workItemTargetClass" value="sailpoint.object.Identity"/>
+      <Arg name="workItemRequester" value="Pratap"/>
+      <OwnerScript>
+        <Source><![CDATA[import sailpoint.object.*;
+import org.apache.log4j.Logger;
+import java.util.*;
+ 
+Logger custLog = Logger.getLogger("customLogger.myRule");
+custLog.info("Logger Working");
+ 
+Identity iden = context.getObjectById(Identity.class,IdentityName);
+String managerIdentity = iden.getManager().getName();
+List list1 = new ArrayList();
+  
+  list1.add(managerIdentity);
+  
+return list1;]]></Source>
+      </OwnerScript>
+    </Approval>
+    <Arg name="IdentityName" value="ref:IdentityName"/>
+    <Transition to="provisionProject"/>
+  </Step>
+  <Step icon="Default" name="Finalize" posX="761" posY="120">
+    <Arg name="trace"/>
+    <Arg name="autoVerifyIdentityRequest"/>
+    <Arg name="approvalSet"/>
+    <Arg name="ticketManagementApplication"/>
+    <Arg name="project"/>
+    <Arg name="identityRequestId"/>
+    <Arg name="source" value="ref:UI"/>
+    <Arg name="priority"/>
+    <Arg name="ticketDataGenerationRule"/>
+    <Arg name="target">
+      <Script>
+        <Source><![CDATA[import sailpoint.object.Identity;
+
+Identity iden = context.getObjectByName(Identity.class,IdentityName);
+String identity = iden.getName();
+
+return identity;]]></Source>
+      </Script>
+    </Arg>
+    <WorkflowRef>
+      <Reference class="sailpoint.object.Workflow" name="Identity Request Finalize"/>
+    </WorkflowRef>
+  </Step>
+  <Step action="auditLCMCompletion" icon="Default" name="Audit" posX="793" posY="187">
+    <Arg name="approvalSet" value="ref:approvalSet"/>
+    <Arg name="target">
+      <Script>
+        <Source><![CDATA[import sailpoint.object.Identity;
+List list1 = new ArrayList();
+
+Identity iden = context.getObjectByName(Identity.class,IdentityName);
+String identity = iden.getName();
+
+list1.add(identity);
+
+return list1;]]></Source>
+      </Script>
+    </Arg>
+    <Transition to="Stop"/>
+  </Step>
+</Workflow>

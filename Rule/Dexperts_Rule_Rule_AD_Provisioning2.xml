@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule language="beanshell" name="Rule_AD_Provisioning2" type="BuildMap">
+  <Source><![CDATA[
+import sailpoint.api.*;  
+import sailpoint.object.*;  
+import sailpoint.api.SailPointContext;  
+import sailpoint.object.Attributes;  
+import sailpoint.object.ProvisioningPlan.AccountRequest;  
+import sailpoint.object.ProvisioningPlan.AttributeRequest;  
+import sailpoint.object.ProvisioningPlan.Operation;  
+import sailpoint.api.Provisioner;
+import java.util.List;
+import java.util.ArrayList;  
+import sailpoint.object.ProvisioningPlan;
+import org.apache.log4j.Logger;
+
+  Logger custLog = Logger.getLogger("customLogger.myRule");
+  
+  ProvisioningPlan plan = new ProvisioningPlan(); 
+	 
+  String username = "Ram.Sam";
+  Identity ident = context.getObjectByName(Identity.class, username);
+  custLog.info("I love the identity"+ident);
+  
+  String toProvAppName= "Active Directory Application";  
+  String adDomainAddress = ",ou=TribleByte,ou=JobHunt,dc=dexpertrain,dc=com";  
+  
+  // Create AD Account   
+  AccountRequest accReq = new AccountRequest();  
+  
+  System.out.println("This is working");
+  
+  accReq.setApplication(toProvAppName);  
+  System.out.println("This is working1");
+  accReq.setOperation(AccountRequest.Operation.Create);  
+  System.out.println("This is working2");
+  accReq.setNativeIdentity("CN="+username+",OU=TribleByte,OU=JobHunt,DC=dexpertrain,DC=com");
+  
+  System.out.println("This is working3");
+  
+  accReq.add(new AttributeRequest("sAMAccountName",Operation.Add, username));  
+  accReq.add(new AttributeRequest("distinguishedName",Operation.Set,"cn="+username+adDomainAddress));  
+  accReq.add(new AttributeRequest("password",Operation.Add,"newPa$$word"));  
+  accReq.add(new AttributeRequest("IIQDisabled",Operation.Add,false));   
+  accReq.add(new AttributeRequest("memberOf",Operation.Set,"CN=DataScience,OU=TribleByte,OU=JobHunt,DC=dexpertrain,DC=com"));
+  
+  List accReqList = new ArrayList();  
+  accReqList.add(accReq);  
+  System.out.println("This is working4"+accReqList);
+  
+ 
+  plan.setAccountRequests(accReqList);
+  System.out.println("This is working5"+plan);
+  plan.setIdentity(ident);  
+  System.out.println("This is working6"+plan);
+ 
+  Provisioner provisioner = new Provisioner(context);
+  provisioner.execute(plan);
+  
+  return plan.toXml();
+                                                                             
+  ]]></Source>
+</Rule>

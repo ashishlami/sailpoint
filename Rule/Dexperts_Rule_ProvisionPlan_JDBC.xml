@@ -1,0 +1,165 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule language="beanshell" name="ProvisionPlan_JDBC" type="Workflow">
+  <Description>A rule used by a Workflow to determine a step action or variable value.
+
+Note that an Attributes map of all variables from the current WorkflowContext, merged with the arguments from the Step, is also passed into the workflow rule.</Description>
+  <Signature returnType="Object">
+    <Inputs>
+      <Argument name="log">
+        <Description>
+          The log object associated with the SailPointContext.
+        </Description>
+      </Argument>
+      <Argument name="context">
+        <Description>
+          A sailpoint.api.SailPointContext object that can be used to query the database if necessary.
+        </Description>
+      </Argument>
+      <Argument name="wfcontext">
+        <Description>
+          The current WorkflowContext.
+        </Description>
+      </Argument>
+      <Argument name="handler">
+        <Description>
+          The workflow handler associated with the current WorkflowContext.
+        </Description>
+      </Argument>
+      <Argument name="workflow">
+        <Description>
+          The current Workflow definition.
+        </Description>
+      </Argument>
+      <Argument name="step">
+        <Description>
+          The current Step.
+        </Description>
+      </Argument>
+      <Argument name="approval">
+        <Description>
+          The current Approval.
+        </Description>
+      </Argument>
+      <Argument name="item">
+        <Description>
+          The WorkItem being processed.
+        </Description>
+      </Argument>
+    </Inputs>
+    <Returns>
+      <Argument name="Object">
+        <Description>
+          The result of the workflow rule; dependent on the rule itself.
+        </Description>
+      </Argument>
+    </Returns>
+  </Signature>
+  <Source><![CDATA[System.out.println("Termination Rule is running...");
+
+
+   import org.apache.log4j.Logger;
+   import sailpoint.object.*;
+   import sailpoint.object.ProvisioningPlan;
+   import sailpoint.object.ProvisioningPlan.AccountRequest;
+   import sailpoint.object.ProvisioningPlan.AttributeRequest;
+import sailpoint.object.ProvisioningPlan.Operation;
+   import sailpoint.api.Provisioner;
+   import java.util.List;
+   import java.util.ArrayList;
+   import java.util.Map;
+   import java.util.HashMap;
+   import org.apache.log4j.Logger;
+ 
+	
+Logger custLog = Logger.getLogger("customLogger.myRule");
+
+String ent=EntitleMent;
+custLog.info("getting entitlement"+ent);
+
+custLog.info("Identity: "+IdentityName);
+
+Identity iden=context.getObjectById(Identity.class,IdentityName);
+String identity = iden.getName();
+String firstname = iden.getFirstname();
+String lastname = iden.getLastname();
+String email = iden.getEmail();
+String manager = iden.getStringAttribute("manager");
+
+Identity idName = context.getObjectByName(Identity.class,identity);
+
+custLog.info("This is idName"+idName);
+  
+Application app=context.getObjectById(Application.class,ApplicationName);  
+String appname=app.getName();
+
+  custLog.info("Username " +identity);
+ 	custLog.info("Application selected:"+appname);
+  
+  //Create a new plan 
+  ProvisioningPlan plan= new ProvisioningPlan();
+  plan.setIdentity(idName);
+  custLog.info("Plan " +plan);
+
+ List list = new ArrayList(); 
+  
+  
+  if (appname.equals("JDBC Global Provisioning")){
+
+custLog.info("JDBC Account Request Started");
+
+ AccountRequest JDBCaccountRequest= new AccountRequest();
+
+JDBCaccountRequest.setApplication("JDBC Global Provisioning");
+JDBCaccountRequest.setNativeIdentity(identity);
+
+if  (AdOperation.equals("Create")){
+
+ JDBCaccountRequest.setOperation(ProvisioningPlan.AccountRequest.Operation.Create);
+ JDBCaccountRequest.add(new AttributeRequest("Role",Operation.Set, ent)); 
+JDBCaccountRequest.add(new AttributeRequest("Firstname",Operation.Add, firstname)); 
+JDBCaccountRequest.add(new AttributeRequest("Lastname",Operation.Add, lastname)); 
+JDBCaccountRequest.add(new AttributeRequest("Email",Operation.Add, email)); 
+JDBCaccountRequest.add(new AttributeRequest("Manager",Operation.Add, manager)); 
+JDBCaccountRequest.add(new AttributeRequest("PositionCode",Operation.Add, PositionCode)); 
+JDBCaccountRequest.add(new AttributeRequest("JobCode",Operation.Add, JobCode)); 
+JDBCaccountRequest.add(new AttributeRequest("Country",Operation.Add, Country)); 
+JDBCaccountRequest.add(new AttributeRequest("gender",Operation.Add, Gender)); 
+JDBCaccountRequest.add(new AttributeRequest("Status",Operation.Add, "active")); 
+
+
+  list.add(JDBCaccountRequest);
+ 
+  custLog.info("Works till here ");
+ 	custLog.info("Create is working too");
+  
+} else if(AdOperation.equals("Delete")){
+   JDBCaccountRequest.setOperation(ProvisioningPlan.AccountRequest.Operation.Delete);
+     list.add(JDBCaccountRequest);
+}	else if(AdOperation.equals("Modify")){
+   	JDBCaccountRequest.setOperation(ProvisioningPlan.AccountRequest.Operation.Modify);
+  	 JDBCaccountRequest.add(new AttributeRequest("Role",Operation.Set, ent)); 
+     list.add(JDBCaccountRequest);
+} else if(AdOperation.equals("Enable")){
+   JDBCaccountRequest.setOperation(ProvisioningPlan.AccountRequest.Operation.Enable);
+     list.add(JDBCaccountRequest);
+}	else if(AdOperation.equals("Disable")){
+   	JDBCaccountRequest.setOperation(ProvisioningPlan.AccountRequest.Operation.Disable);
+     list.add(JDBCaccountRequest);
+}
+    
+    else{
+  custLog.info("Operation not supported for JDBC");
+}
+ 
+} 
+
+
+  //Account Request added to the provisioning plan
+  plan.setAccountRequests(list);
+  
+ custLog.info(plan.toXml());
+ System.out.println(plan.toXml());
+ 
+ return plan;]]></Source>
+</Rule>

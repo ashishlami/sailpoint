@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule language="beanshell" name="returning_requestableEntitlement">
+  <Description>Test rule to get all entitlements from one application </Description>
+  <Source><![CDATA[
+  import sailpoint.object.*;
+ 	import org.apache.log4j.Logger;
+  
+	
+  Logger custLog = Logger.getLogger("customLogger.logfromruleName");
+	
+ Filter f1 = Filter.eq("ManagedAttribute.requestable", true);
+ 	QueryOptions qo = new QueryOptions();
+ 	qo.addFilter(f1);
+  
+  custLog.info("getting qo"+qo);
+  
+  List manageAttribute = context.getObjects(ManagedAttribute.class, qo);
+  List list1 = new ArrayList();
+  
+  for ( ManagedAttribute manage : manageAttribute) {
+    String attribute = manage.getValue();
+    list1.add(attribute);
+     
+  }
+  
+  return list1;
+  
+ 
+  ]]></Source>
+</Rule>

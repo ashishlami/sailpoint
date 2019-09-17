@@ -1,0 +1,139 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule language="beanshell" name="Provisioning_AD_Workflow_Operation_setup" type="Workflow">
+  <Description>A rule used by a Workflow to determine a step action or variable value.
+
+Note that an Attributes map of all variables from the current WorkflowContext, merged with the arguments from the Step, is also passed into the workflow rule.</Description>
+  <Signature returnType="Object">
+    <Inputs>
+      <Argument name="log">
+        <Description>
+          The log object associated with the SailPointContext.
+        </Description>
+      </Argument>
+      <Argument name="context">
+        <Description>
+          A sailpoint.api.SailPointContext object that can be used to query the database if necessary.
+        </Description>
+      </Argument>
+      <Argument name="wfcontext">
+        <Description>
+          The current WorkflowContext.
+        </Description>
+      </Argument>
+      <Argument name="handler">
+        <Description>
+          The workflow handler associated with the current WorkflowContext.
+        </Description>
+      </Argument>
+      <Argument name="workflow">
+        <Description>
+          The current Workflow definition.
+        </Description>
+      </Argument>
+      <Argument name="step">
+        <Description>
+          The current Step.
+        </Description>
+      </Argument>
+      <Argument name="approval">
+        <Description>
+          The current Approval.
+        </Description>
+      </Argument>
+      <Argument name="item">
+        <Description>
+          The WorkItem being processed.
+        </Description>
+      </Argument>
+    </Inputs>
+    <Returns>
+      <Argument name="Object">
+        <Description>
+          The result of the workflow rule; dependent on the rule itself.
+        </Description>
+      </Argument>
+    </Returns>
+  </Signature>
+  <Source><![CDATA[import sailpoint.api.*;  
+import sailpoint.object.*;  
+import sailpoint.api.SailPointContext;  
+import sailpoint.object.Attributes;  
+import sailpoint.object.ProvisioningPlan.AccountRequest;  
+import sailpoint.object.ProvisioningPlan.AttributeRequest;  
+import sailpoint.object.ProvisioningPlan.Operation;  
+import sailpoint.api.Provisioner;
+import java.util.List;
+import java.util.ArrayList;  
+import sailpoint.object.ProvisioningPlan;
+import org.apache.log4j.Logger;
+
+  Logger custLog = Logger.getLogger("customLogger.myRule");
+  
+  ProvisioningPlan plan = new ProvisioningPlan(); 
+	 
+
+  Identity ident = context.getObjectById(Identity.class,IdentityName);
+  String identname = ident.getDisplayName();
+	custLog.info("Username"+identname);
+ 
+  String toProvAppName= "Active Directory Application";  
+  custLog.info("This is entitlement"+ManageAttribute);
+  
+  
+	int fidxofcomma=ManageAttribute.indexOf(",");  
+  int lidx=ManageAttribute.length();
+	String entit = ManageAttribute.substring(fidxofcomma,lidx);
+  custLog.info(entit);
+ 
+  
+ // String dn=identname+entit;
+  String dn="cn="+identname+entit;
+  custLog.info("distingushname"+dn);
+  
+  custLog.info("Adoperation is coming"+AdOperation);
+  
+  // Create AD Account   
+  AccountRequest accReq = new AccountRequest();  
+  accReq.setApplication(toProvAppName);  
+	accReq.setNativeIdentity(dn);
+  
+  
+  if (AdOperation.equals("Create")){
+  custLog.info("Works till here ");
+  accReq.setOperation(AccountRequest.Operation.Create); 
+  custLog.info("Create is working too");
+  
+ accReq.add(new AttributeRequest("sAMAccountName",Operation.Add, identname));  
+ accReq.add(new AttributeRequest("distinguishedName",Operation.Add,dn));  
+ custLog.info("this is working with dn");
+ accReq.add(new AttributeRequest("*password*",Operation.Add,"newPa$$word"));  
+ accReq.add(new AttributeRequest("IIQDisabled",Operation.Set,"false"));  
+ accReq.add(new AttributeRequest("memberOf",Operation.Add, ManageAttribute));
+  
+ custLog.info("All attribute request is also working");
+    
+  } else if (AdOperation.equals("Enable")) {
+   custLog.info("Enable operation is running");
+    accReq.setOperation(AccountRequest.Operation.Enable); 
+  } else if (AdOperation.equals("Disable")) {
+    custLog.info("Disable operation is running");
+    accReq.setOperation(AccountRequest.Operation.Disable); 
+  } else {
+  	custLog.info("You need to choose operation");
+  }
+  
+  
+  List accReqList = new ArrayList();  
+  accReqList.add(accReq);  
+
+  
+  plan.setAccountRequests(accReqList);
+  plan.setIdentity(ident);  
+ 	custLog.info(plan.toXml());
+ 
+  //Provisioner provisioner = new Provisioner(context);
+  //provisioner.execute(plan);
+  
+  return plan;]]></Source>
+</Rule>

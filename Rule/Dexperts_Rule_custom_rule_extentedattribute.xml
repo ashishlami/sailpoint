@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule language="beanshell" name="custom_rule_extentedattribute">
+  <Description>Test rule to get all entitlements from one application </Description>
+  <Source><![CDATA[
+  import sailpoint.object.*;
+ 	import org.apache.log4j.Logger;
+	
+  Logger custLog = Logger.getLogger("customLogger.logfromruleName");
+
+  
+  
+  Filter f1 = Filter.eq("application.name","Active Directory Application");
+	custLog.info("filter aayo"+f1);
+  QueryOptions qo = new QueryOptions();
+	qo.addFilter(f1);
+
+  custLog.info("app"+qo);
+   
+   List managedAttributes = context.getObjects(ManagedAttribute.class,qo); 
+  
+  // List list = new ArrayList();
+   //Map map = new HashMap();
+   
+   for (ManagedAttribute ent : managedAttributes){
+     ent.setAttribute("priority","high");
+     
+  	context.saveObject(ent);
+    context.commitTransaction();
+  // }
+  //return managedAttributes;
+   }
+  
+  
+  
+  Filter f2 = Filter.ne("application.name","Active Directory Application");
+	custLog.info("filter aayo"+f1);
+  QueryOptions qo = new QueryOptions();
+	q2.addFilter(f2);
+  
+  
+   List managedAttributes1 = context.getObjects(ManagedAttribute.class,q2); 
+  	
+  for (ManagedAttribute ent1 : managedAttributes1){
+     ent.setAttribute("priority","low");
+     
+  	context.saveObject(ent1);
+    context.commitTransaction();
+  
+  ]]></Source>
+</Rule>

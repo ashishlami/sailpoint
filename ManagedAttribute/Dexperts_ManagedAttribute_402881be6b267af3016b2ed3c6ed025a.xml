@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE ManagedAttribute PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<ManagedAttribute aggregated="true" attribute="memberOf" displayName="DEXPERTRAIN\CloundEngineer" hash="b4cde2da6ce5f6e44829bee686a3589126b8fe68" lastRefresh="1559859124256" type="group" uuid="{2540aea2-f4fd-4485-8440-f770e9247fcc}" value="CN=CloundEngineer,OU=TribleByte,OU=JobHunt,DC=dexpertrain,DC=com">
+  <ApplicationRef>
+    <Reference class="sailpoint.object.Application" name="Active Directory Application"/>
+  </ApplicationRef>
+  <Attributes>
+    <Map>
+      <entry key="GroupScope" value="Global"/>
+      <entry key="GroupType" value="Security"/>
+      <entry key="cn" value="CloundEngineer"/>
+      <entry key="msDS-PrincipalName" value="DEXPERTRAIN\CloundEngineer"/>
+      <entry key="objectSid" value="S-1-5-21-3524962787-4087557611-1025314962-1127"/>
+      <entry key="objectguid" value="{2540aea2-f4fd-4485-8440-f770e9247fcc}"/>
+      <entry key="sAMAccountName" value="CloundEngineer"/>
+      <entry key="sysDescriptions">
+        <value>
+          <Map>
+            <entry key="en_US" value="This is requestable entitlement"/>
+          </Map>
+        </value>
+      </entry>
+    </Map>
+  </Attributes>
+  <Owner>
+    <Reference class="sailpoint.object.Identity" name="spadmin"/>
+  </Owner>
+</ManagedAttribute>
